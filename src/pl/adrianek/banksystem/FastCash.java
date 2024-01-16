@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.util.Date;
 
 public class FastCash extends JFrame implements ActionListener {
@@ -81,9 +82,21 @@ public class FastCash extends JFrame implements ActionListener {
         Date date = new Date();
         try {
             Conn conn = new Conn();
-            String query = "insert into bank values('" + pinnumber + "', '" + date + "', 'Withdraw1', '" + amount + "')";
+            ResultSet rs = conn.s.executeQuery("select balance from login where pin = '" + pinnumber + "' and cardnumber='" + numbercard + "'");
+            int balance = 0;
+            while (rs.next()) {
+                balance = Integer.parseInt(rs.getString("balance"));
+            }
+            if (amount > balance) {
+                JOptionPane.showMessageDialog(null, "Nie można wypłacić kwoty, brak środków na koncie");
+                return;
+            }
+            balance -= amount;
+            String query1 = "UPDATE login SET balance='" + balance + "' WHERE cardnumber = '" + numbercard + "' and pin = '" + pinnumber + "'";
+            conn.s.executeUpdate(query1);
+            String query = "insert into bank values('" + pinnumber + "','" + numbercard + "', '" + date + "', 'Withdraw1', '" + amount + "')";
             conn.s.executeUpdate(query);
-            JOptionPane.showMessageDialog(null, "Wypłacono kwotę " + amount + " zł z konta pomyślnie");
+            JOptionPane.showMessageDialog(null, "Wypłacono kwotę " + amount + "zł z konta pomyślnie");
             setVisible(false);
             new Transactions(pinnumber, numbercard);
         } catch (Exception e) {
