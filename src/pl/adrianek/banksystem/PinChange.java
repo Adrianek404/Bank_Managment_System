@@ -37,6 +37,7 @@ public class PinChange extends JFrame implements ActionListener {
         pin = new JTextField();
         pin.setFont(new Font("Raleway", Font.BOLD, 25));
         pin.setBounds(330, 320, 180, 25);
+        pin.addKeyListener(new NumericKeyListener(pin));
         image.add(pin);
 
         JLabel repintext = new JLabel("Powtórz nowy PIN:");
@@ -48,6 +49,7 @@ public class PinChange extends JFrame implements ActionListener {
         repin = new JTextField();
         repin.setFont(new Font("Raleway", Font.BOLD, 25));
         repin.setBounds(330, 360, 180, 25);
+        repin.addKeyListener(new NumericKeyListener(repin));
         image.add(repin);
 
         change = new JButton("Zmień");

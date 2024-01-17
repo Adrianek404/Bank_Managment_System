@@ -12,7 +12,7 @@ public class Login extends JFrame implements ActionListener {
     JTextField cardTextField;
     JPasswordField pinTextField;
 
-    Login(){
+    Login() {
         setTitle("Bankomat");
 
         setLayout(null);
@@ -48,6 +48,7 @@ public class Login extends JFrame implements ActionListener {
         pinTextField = new JPasswordField();
         pinTextField.setBounds(310, 220, 250, 30);
         pinTextField.setFont(new Font("Arial", Font.BOLD, 14));
+        pinTextField.addKeyListener(new NumericKeyListener(pinTextField));
         add(pinTextField);
 
         login = new JButton("ZALOGUJ");
@@ -84,27 +85,52 @@ public class Login extends JFrame implements ActionListener {
         setLocation(350, 200);
 
     }
+
+    int attempts = 0;
+    boolean block = false;
+
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == clear){
+        if (e.getSource() == clear) {
             cardTextField.setText("");
             pinTextField.setText("");
-        } else if (e.getSource() == login){
+        } else if (e.getSource() == login) {
             Conn conn = new Conn();
             String cardnumber = cardTextField.getText();
             String pinnumber = pinTextField.getText();
-            String query = "select * from login where cardnumber = '" +cardnumber+"' and pin = '"+pinnumber+"'";
-            try {
-                ResultSet rs = conn.s.executeQuery(query);
-                if (rs.next()){
-                    setVisible(false);
-                    new Transactions(pinnumber, cardnumber).setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Nie poprawny numer karty lub pin");
+            if (!block) {
+                String query = "select * from login where cardnumber = '" + cardnumber + "' and pin = '" + pinnumber + "'";
+                try {
+                    ResultSet rs = conn.s.executeQuery(query);
+                    if (rs.next()) {
+                        if (rs.getBoolean("blocked")) {
+                            JOptionPane.showMessageDialog(null, "Konto zostało zablokowane. Skontaktuj się z bankiem.");
+                            return;
+                        }
+                        setVisible(false);
+                        new Transactions(pinnumber, cardnumber).setVisible(true);
+                    } else {
+                        String qer = "select * from login where cardnumber = '" + cardnumber + "'";
+                        ResultSet rs2 = conn.s.executeQuery(qer);
+                        if (!rs2.next()) {
+                            JOptionPane.showMessageDialog(null, "Podany numer karty bankowej nie istnieje w naszym baku.");
+                        } else {
+                            attempts++;
+                            if (attempts >= 3) {
+                                block = true;
+                                conn.s.executeUpdate("UPDATE `login` SET blocked = 1 WHERE `cardnumber`='" + cardnumber + "'");
+                                JOptionPane.showMessageDialog(null, "Przekroczono limit prób. Konto zostało zablokowane.");
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Niepoprawny numer PIN. Pozostałe próby: " + (3 - attempts));
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    System.out.println(ex);
                 }
-            } catch (Exception ex){
-                System.out.println(ex);
+            } else {
+                JOptionPane.showMessageDialog(null, "Konto zostało zablokowane. Skontaktuj się z bankiem.");
             }
-        } else if (e.getSource() == signup){
+        } else if (e.getSource() == signup) {
             setVisible(false);
             new SignupOne().setVisible(true);
         }

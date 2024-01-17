@@ -9,7 +9,8 @@ public class Transactions extends JFrame implements ActionListener {
 
     JButton deposit, withdraw1, fastcash, ministatemnt, pinchange, balance, exit;
     String pinnumber, numbercard;
-    Transactions(String pinnumber, String numbercard){
+
+    Transactions(String pinnumber, String numbercard) {
         this.pinnumber = pinnumber;
         this.numbercard = numbercard;
         setLayout(null);
@@ -70,23 +71,26 @@ public class Transactions extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == exit){
+        if (e.getSource() == exit) {
             System.exit(0);
-        } else if (e.getSource().equals(deposit)){
+        } else if (e.getSource().equals(deposit)) {
             setVisible(false);
             new Deposit(pinnumber, numbercard).setVisible(true);
-        } else if (e.getSource().equals(withdraw1)){
+        } else if (e.getSource().equals(withdraw1)) {
             setVisible(false);
             new Withdraw1(pinnumber, numbercard).setVisible(true);
-        } else if (e.getSource().equals(fastcash)){
+        } else if (e.getSource().equals(fastcash)) {
             setVisible(false);
             new FastCash(pinnumber, numbercard).setVisible(true);
-        } else if (e.getSource().equals(pinchange)){
+        } else if (e.getSource().equals(pinchange)) {
             setVisible(false);
             new PinChange(pinnumber, numbercard).setVisible(true);
-        } else if (e.getSource().equals(balance)){{
+        } else if (e.getSource().equals(balance)) {
             setVisible(false);
             new BalanceEnquiry(pinnumber, numbercard).setVisible(true);
-        }}
+        } else if (e.getSource().equals(ministatemnt)) {
+            setVisible(false);
+            new MiniStatemnt(pinnumber, numbercard).setVisible(true);
+        }
     }
 }

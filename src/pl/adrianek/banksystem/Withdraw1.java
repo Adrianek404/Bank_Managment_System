@@ -32,6 +32,7 @@ public class Withdraw1 extends JFrame implements ActionListener {
         amount = new JTextField();
         amount.setFont(new Font("Raleway", Font.BOLD, 22));
         amount.setBounds(170, 350, 320, 25);
+        amount.addKeyListener(new NumericKeyListener(amount));
         image.add(amount);
 
         withdraw = new JButton("Wypłać");
